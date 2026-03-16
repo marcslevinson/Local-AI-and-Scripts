@@ -1,0 +1,6 @@
+.DS_Store
+.aider*
+node_modules/
+__pycache__/
+*.pyc
+.claude/

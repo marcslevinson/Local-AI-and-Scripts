@@ -1,0 +1,223 @@
+/**
+ * Sg Row Components — row.css
+ *
+ * Components:
+ *   <sg-section-header>  — Bold section label (Default or Light color)
+ *   <sg-row-group>       — White card container for contained rows
+ *   <sg-row>             — List row with configurable action affordance
+ *
+ * Figma source: Components 2026 → node 11864-12290
+ */
+
+/* ── Section Header ────────────────────────────────────────── */
+
+.sg-section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 56px;
+  padding: var(--space-4) var(--space-2);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.sg-section-header__text {
+  flex: 1;
+  font-family: var(--font-family);
+  font-size: var(--font-size-xl);   /* 20px */
+  font-weight: var(--font-weight-bold);
+  line-height: 25px;
+  letter-spacing: 0;
+  color: var(--color-on-surface);
+}
+
+.sg-section-header--light .sg-section-header__text {
+  color: var(--color-on-surface-muted);
+}
+
+/* ── Row Group (white card container) ─────────────────────── */
+
+.sg-row-group {
+  display: block;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  width: 100%;
+}
+
+/* ── Row ───────────────────────────────────────────────────── */
+
+.sg-row {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  background: var(--color-surface);
+}
+
+/* Stand-alone rows (not inside a card) sit on transparent bg */
+.sg-row--stand-alone {
+  background: transparent;
+}
+
+/* Inner content row */
+.sg-row__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  min-height: 55px;
+  box-sizing: border-box;
+}
+
+/* Text area */
+.sg-row__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* Switch variant: title row sits on top, subtext below with extra padding */
+.sg-row--has-subtext .sg-row__inner {
+  align-items: flex-start;
+  padding-bottom: 0;
+}
+
+.sg-row--has-subtext.sg-row--action-switch .sg-row__inner {
+  padding-bottom: var(--space-3);
+}
+
+.sg-row__subtext-wrap {
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+.sg-row__title {
+  font-family: var(--font-family);
+  font-size: var(--font-size-lg);   /* 17px */
+  font-weight: var(--font-weight-medium);
+  line-height: 22px;
+  color: var(--color-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sg-row__subtext {
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);   /* 15px */
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+  color: var(--color-on-surface-muted);
+}
+
+/* Divider line */
+.sg-row__divider {
+  height: 1px;
+  background: var(--color-border);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+/* ── Action affordances ────────────────────────────────────── */
+
+.sg-row__action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-on-surface-muted);
+}
+
+/* Chevron */
+.sg-row__chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--color-on-surface-muted);
+}
+
+/* Selector (value + up-down arrows) */
+.sg-row__selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+  color: var(--color-on-surface-muted);
+  white-space: nowrap;
+}
+
+/* Check mark (right side) */
+.sg-row__check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary);
+}
+
+/* Check (left side) — goes before text */
+.sg-row__check-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+/* Info circle */
+.sg-row__info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 2px;
+  color: var(--color-on-surface-muted);
+}
+
+/* Menu dots */
+.sg-row__menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  color: var(--color-on-surface-muted);
+}
+
+/* Edit icon */
+.sg-row__edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 2px;
+  color: var(--color-on-surface-muted);
+}
+
+/* Clickable row cursor */
+.sg-row--clickable {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--transition-fast);
+}
+
+.sg-row--clickable:hover {
+  background: var(--color-surface-subtle);
+}
+
+.sg-row--clickable:active {
+  background: var(--color-border);
+}

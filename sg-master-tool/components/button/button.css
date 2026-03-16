@@ -1,0 +1,110 @@
+/* ─────────────────────────────────────────────
+   Sg Button Component
+   Variants:  primary | secondary
+   Sizes:     large | small
+   States:    default | hover | pressed | inactive
+   Layout:    hug (fit-content) | fill (100% width)
+   Floating:  adds drop shadow
+───────────────────────────────────────────── */
+
+.sg-btn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             var(--btn-gap);
+  padding:         0 var(--btn-padding-h);
+  border-radius:   var(--btn-radius);
+  border:          var(--btn-border-width) solid transparent;
+  font-family:     var(--font-family);
+  font-weight:     var(--btn-font-weight);
+  white-space:     nowrap;
+  cursor:          pointer;
+  text-decoration: none;
+  transition:      background-color var(--transition-fast),
+                   border-color     var(--transition-fast),
+                   color            var(--transition-fast),
+                   box-shadow       var(--transition-fast),
+                   opacity          var(--transition-fast);
+  -webkit-font-smoothing: antialiased;
+}
+
+.sg-btn:focus-visible {
+  outline:        2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* ─── Icon slots ────────────────────────────── */
+.sg-btn__icon {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  flex-shrink:     0;
+}
+
+/* ─── Sizes ─────────────────────────────────── */
+.sg-btn--large {
+  height:    var(--btn-height-lg);
+  font-size: var(--btn-font-size-lg);
+  line-height: 22px;
+}
+
+.sg-btn--large .sg-btn__icon { width: 24px; height: 24px; }
+
+.sg-btn--small {
+  height:    var(--btn-height-sm);
+  font-size: var(--btn-font-size-sm);
+  line-height: 20px;
+}
+
+.sg-btn--small .sg-btn__icon { width: 20px; height: 20px; }
+
+/* ─── Layout ─────────────────────────────────── */
+.sg-btn--hug   { width: fit-content; }
+.sg-btn--fill  { width: 100%; }
+
+/* ─── Primary ────────────────────────────────── */
+.sg-btn--primary {
+  background-color: var(--color-primary);
+  border-color:     var(--color-primary);
+  color:            var(--color-on-primary);
+}
+
+.sg-btn--primary:hover:not(:disabled):not(.sg-btn--inactive) {
+  background-color: var(--color-primary-hover);
+  border-color:     var(--color-primary-hover);
+}
+
+.sg-btn--primary:active:not(:disabled):not(.sg-btn--inactive),
+.sg-btn--primary.sg-btn--pressed {
+  background-color: var(--color-primary-pressed);
+  border-color:     var(--color-primary-pressed);
+}
+
+/* ─── Secondary ──────────────────────────────── */
+.sg-btn--secondary {
+  background-color: var(--color-secondary-bg);
+  border-color:     var(--color-secondary-border);
+  color:            var(--color-secondary-text);
+}
+
+.sg-btn--secondary:hover:not(:disabled):not(.sg-btn--inactive) {
+  background-color: var(--color-secondary-hover-bg);
+}
+
+.sg-btn--secondary:active:not(:disabled):not(.sg-btn--inactive),
+.sg-btn--secondary.sg-btn--pressed {
+  background-color: var(--color-secondary-pressed-bg);
+}
+
+/* ─── Inactive / Disabled ────────────────────── */
+.sg-btn--inactive,
+.sg-btn:disabled {
+  opacity: var(--opacity-inactive);
+  cursor:  not-allowed;
+  pointer-events: none;
+}
+
+/* ─── Floating ───────────────────────────────── */
+.sg-btn--floating {
+  box-shadow: var(--shadow-float);
+}

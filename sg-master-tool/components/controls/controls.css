@@ -1,0 +1,209 @@
+/**
+ * Sg Controls — controls.css
+ *
+ * Components:
+ *   <sg-toggle>       — On/off switch (large 52×32 or small 32×20)
+ *   <sg-checkbox>     — Checkbox (default, selected, disabled)
+ *   <sg-radio>        — Radio button (default, selected, disabled)
+ *   <sg-seg-control>  — Segmented control (2 or 3 options)
+ *
+ * Figma source: Controls page — node 1090-29713
+ *   Toggle:  Switches section — 6721:11597
+ *   Checkbox: Check boxes section — 6721:10848
+ *   Radio:   Check boxes section — 6721:10732
+ *   Seg control: Segmented controls section — 6720:1282
+ */
+
+/* ── Toggle ────────────────────────────────────────────────── */
+
+.sg-toggle {
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 40px;
+  flex-shrink: 0;
+  background: none;
+  transition: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Large: 52×32 */
+.sg-toggle--large {
+  width: 52px;
+  height: 32px;
+}
+
+/* Small: 32×20 */
+.sg-toggle--small {
+  width: 32px;
+  height: 20px;
+}
+
+.sg-toggle__track {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  padding: 0;
+  transition: background var(--transition-fast);
+}
+
+.sg-toggle--off .sg-toggle__track {
+  background: var(--color-border);        /* #e7e7e7 */
+  justify-content: flex-start;
+}
+
+.sg-toggle--on .sg-toggle__track {
+  background: var(--color-primary);       /* #04865F */
+  justify-content: flex-end;
+}
+
+.sg-toggle--disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.sg-toggle__thumb {
+  background: white;
+  border-radius: 40px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  border: 2px solid;
+  transition: border-color var(--transition-fast);
+}
+
+.sg-toggle--large .sg-toggle__thumb  { width: 31px; height: 31px; }
+.sg-toggle--small .sg-toggle__thumb  { width: 20px; height: 20px; }
+
+.sg-toggle--off .sg-toggle__thumb { border-color: rgba(29,29,29,0.4); }
+.sg-toggle--on  .sg-toggle__thumb { border-color: var(--color-primary); }
+
+/* ── Checkbox ──────────────────────────────────────────────── */
+
+.sg-checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: var(--color-on-surface);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sg-checkbox svg {
+  display: block;
+}
+
+.sg-checkbox--checked {
+  color: var(--color-primary);
+}
+
+.sg-checkbox--disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+/* ── Radio ─────────────────────────────────────────────────── */
+
+.sg-radio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 2px;
+  box-sizing: border-box;
+  color: var(--color-on-surface);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sg-radio svg {
+  display: block;
+}
+
+.sg-radio--checked {
+  color: var(--color-primary);
+}
+
+.sg-radio--disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+/* ── Segmented Control ─────────────────────────────────────── */
+
+.sg-seg-control {
+  display: flex;
+  flex-direction: column;
+  height: 40px;
+  width: 100%;
+  background: var(--color-border);        /* #e7e7e7 */
+  border-radius: 48px;
+  padding: 1px;
+  box-sizing: border-box;
+}
+
+.sg-seg-control__content {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: 48px;
+  width: 100%;
+  min-height: 0;
+}
+
+.sg-seg-control__item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  border-radius: 48px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0 var(--space-3);
+  transition: background var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+
+.sg-seg-control__item--selected {
+  background: white;
+}
+
+.sg-seg-control__label {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+  line-height: 18px;
+  white-space: nowrap;
+  pointer-events: none;
+  text-align: center;
+}
+
+.sg-seg-control__item--selected .sg-seg-control__label {
+  color: var(--color-primary);
+}
+
+.sg-seg-control__item:not(.sg-seg-control__item--selected) .sg-seg-control__label {
+  color: var(--color-on-surface-muted);
+}
+
+/* 1px separator between unselected adjacent items */
+.sg-seg-control__separator {
+  width: 1px;
+  height: 12px;
+  background: rgba(148,148,148,0.5);
+  flex-shrink: 0;
+  border-radius: 0.5px;
+}

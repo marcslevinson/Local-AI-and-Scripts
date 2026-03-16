@@ -1,0 +1,7 @@
+{
+  "name": "master-tool",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}

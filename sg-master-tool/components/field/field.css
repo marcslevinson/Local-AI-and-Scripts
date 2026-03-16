@@ -1,0 +1,144 @@
+/* ─────────────────────────────────────────────
+   Sg Field — <sg-field>
+   Matches: Components 2026 › Forms & Fields
+───────────────────────────────────────────── */
+
+sg-field {
+  display: block;
+}
+
+/* ── Wrapper ─────────────────────────────── */
+.sg-field {
+  display:        flex;
+  flex-direction: column;
+  gap:            4px;
+}
+
+/* ── Label row ───────────────────────────── */
+.sg-field__header {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     center;
+  min-height:      20px;
+}
+
+.sg-field__label {
+  font-size:   15px;
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+  color:       #1d1d1d;
+}
+
+.sg-field__action {
+  font-size:       15px;
+  font-weight:     var(--font-weight-bold);
+  color:           var(--color-primary);
+  background:      none;
+  border:          none;
+  padding:         0;
+  cursor:          pointer;
+  font-family:     var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Input shell ─────────────────────────── */
+.sg-field__shell {
+  display:       flex;
+  align-items:   center;
+  gap:           16px;
+  background:    white;
+  border:        1px solid #e7e7e7;
+  border-radius: 8px;
+  padding:       16px 20px 16px 16px;
+  min-height:    54px;
+  box-sizing:    border-box;
+  transition:    border-color 140ms ease, box-shadow 140ms ease;
+}
+
+/* Focused */
+.sg-field--focused .sg-field__shell {
+  border-color: var(--color-primary);
+  box-shadow:   0 0 0 3px rgba(4,134,95,.1);
+}
+
+/* Error */
+.sg-field--error .sg-field__shell {
+  border-color: #d93025;
+  box-shadow:   0 0 0 3px rgba(217,48,37,.08);
+}
+
+/* Inactive */
+.sg-field--inactive .sg-field__shell {
+  background:  #f5f5f5;
+  border-color: #e7e7e7;
+}
+
+/* ── Actual <input> ──────────────────────── */
+.sg-field__input {
+  flex:        1;
+  border:      none;
+  background:  transparent;
+  outline:     none;
+  font-family: var(--font-family);
+  font-size:   17px;
+  font-weight: var(--font-weight-medium);
+  color:       #1d1d1d;
+  line-height: 22px;
+  min-width:   0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sg-field__input::placeholder {
+  color:       #aaa;
+  font-weight: var(--font-weight-regular, 400);
+}
+
+.sg-field--inactive .sg-field__input {
+  color:  #aaa;
+  cursor: not-allowed;
+}
+
+/* ── Right icons ─────────────────────────── */
+.sg-field__icons {
+  display:     flex;
+  align-items: center;
+  gap:         20px;
+  flex-shrink: 0;
+}
+
+.sg-field__icon-btn {
+  display:    flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border:     none;
+  padding:    0;
+  cursor:     pointer;
+  color:      #aaa;
+  transition: color 120ms ease;
+  line-height: 0;
+}
+
+.sg-field__icon-btn:hover { color: #666; }
+
+/* Clear button — only visible when field has value */
+.sg-field__clear { display: none; }
+.sg-field--has-value .sg-field__clear { display: flex; }
+
+/* Error icon — only visible in error state; hides clear when both present */
+.sg-field__error-icon { display: none; line-height: 0; }
+.sg-field--error .sg-field__error-icon { display: flex; align-items: center; }
+.sg-field--error.sg-field--has-value .sg-field__clear { display: none; }
+
+/* ── Helper / error text ─────────────────── */
+.sg-field__message {
+  font-size:   15px;
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+  color:       rgba(29, 29, 29, 0.6);
+  padding:     0 2px;
+}
+
+.sg-field--error .sg-field__message {
+  color: #d93025;
+}

@@ -1,0 +1,13 @@
+{
+  "name": "master-tool",
+  "version": "1.0.0",
+  "description": "Master Tool for visualizing and interfacing with various tools.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.0",
+    "multer": "^1.4.5-lts.1"
+  }
+}

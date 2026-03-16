@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Master Tool</title>
+  <!-- daisyUI (includes Tailwind) -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Design tokens & custom components -->
+  <link href="tokens/tokens.css" rel="stylesheet">
+  <link rel="stylesheet" href="components/button/button.css">
+  <link rel="stylesheet" href="components/field/field.css">
+  <link rel="stylesheet" href="components/controls/controls.css">
+  <link rel="stylesheet" href="components/row/row.css">
+  <style>
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    #drop-zone.drag-over { border-color: oklch(var(--p)); background: oklch(var(--p) / 0.05); }
+    .terminal-output { font-family: 'SF Mono', 'Menlo', monospace; font-size: 12px; line-height: 1.5; }
+    .terminal-output .stderr { color: #f87171; }
+    .terminal-output .info   { color: #60a5fa; }
+    .terminal-output .done   { color: #4ade80; }
+  </style>
+</head>
+<body class="bg-base-200 min-h-screen">
+
+  <!-- Nav -->
+  <div class="navbar bg-base-100 shadow-sm px-6">
+    <div class="flex-1">
+      <span class="text-xl font-bold" style="color: var(--color-primary);">Master Tool</span>
+    </div>
+    <div class="flex-none">
+      <div class="tabs tabs-bordered" id="main-tabs">
+        <a class="tab tab-active" data-tab="home">Home</a>
+        <a class="tab" data-tab="sort">Sort</a>
+        <a class="tab" data-tab="docs">Docs</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ HOME TAB -->
+  <div id="tab-home" class="tab-panel active max-w-4xl mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-6" style="color: var(--color-on-surface);">Dashboard</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- AI Launcher Card -->
+      <div class="card bg-base-100 shadow-md col-span-1 md:col-span-2">
+        <div class="card-body">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="card-title text-lg">Local AI</h3>
+            <div class="flex items-center gap-2">
+              <span id="ai-status-dot" class="inline-block w-3 h-3 rounded-full bg-gray-300"></span>
+              <span id="ai-status-text" class="text-sm text-base-content/60">Checking…</span>
+            </div>
+          </div>
+
+          <!-- Start / Stop -->
+          <div class="flex gap-2 mb-4">
+            <button class="btn btn-sm btn-success" id="btn-ai-start">Start Ollama</button>
+            <button class="btn btn-sm btn-error btn-outline" id="btn-ai-stop">Stop</button>
+          </div>
+
+          <!-- Project folder selector -->
+          <div class="flex items-center gap-2 mb-4">
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-base-content/50 mb-1 uppercase tracking-wide font-semibold">Project Folder</p>
+              <div class="flex gap-2">
+                <input id="project-dir-input" type="text" class="input input-bordered input-sm flex-1 font-mono text-xs" placeholder="Paste or type a folder path…">
+                <button id="btn-set-folder" class="btn btn-sm btn-outline">Set</button>
+              </div>
+              <p id="project-dir-msg" class="text-xs text-base-content/40 mt-1 min-h-[1rem]"></p>
+            </div>
+          </div>
+
+          <!-- Tool launch buttons -->
+          <p class="text-xs text-base-content/50 mb-2 uppercase tracking-wide font-semibold">Launch in Terminal</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <button class="btn btn-outline btn-sm ai-launch-btn" data-tool="ai-code32">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3"/></svg>
+              Aider 32b
+            </button>
+            <button class="btn btn-outline btn-sm ai-launch-btn" data-tool="ai-code14">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3"/></svg>
+              Aider 14b
+            </button>
+            <button class="btn btn-outline btn-sm ai-launch-btn" data-tool="ai-deep">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3"/></svg>
+              DeepSeek 33b
+            </button>
+            <button class="btn btn-primary btn-sm ai-launch-btn" data-tool="opencode">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              OpenCode
+            </button>
+          </div>
+          <p id="ai-launch-msg" class="text-xs text-base-content/50 mt-2 min-h-[1rem]"></p>
+        </div>
+      </div>
+
+      <!-- Ollama Log Box -->
+      <div class="card bg-base-100 shadow-md col-span-1 md:col-span-2">
+        <div class="card-body pb-4">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="card-title text-base">Ollama Log</h3>
+            <div class="flex items-center gap-2">
+              <span id="log-live-dot" class="inline-block w-2 h-2 rounded-full bg-gray-300"></span>
+              <span class="text-xs text-base-content/40">live</span>
+              <button id="btn-clear-log" class="btn btn-xs btn-ghost">Clear</button>
+            </div>
+          </div>
+          <div class="bg-neutral rounded-lg p-3 h-40 overflow-y-auto" id="log-scroll">
+            <pre id="ai-log-output" class="terminal-output text-neutral-content text-xs whitespace-pre-wrap">Waiting for Ollama output… (start Ollama to see logs)</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sort Quick-Launch Card -->
+      <div class="card bg-base-100 shadow-md">
+        <div class="card-body">
+          <h3 class="card-title text-lg">Image Sort</h3>
+          <p class="text-sm text-base-content/60">Drag in screenshots, run a sort script, and let Ollama or OCR organize them into folders.</p>
+          <div class="card-actions justify-end mt-2">
+            <button class="btn btn-primary btn-sm" onclick="switchTab('sort')">Open Sort Tool →</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SORT TAB -->
+  <div id="tab-sort" class="tab-panel max-w-5xl mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-6" style="color: var(--color-on-surface);">Image Sort</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+
+      <!-- Drop Zone -->
+      <div class="card bg-base-100 shadow-md">
+        <div class="card-body">
+          <h3 class="card-title text-base mb-3">1. Drop Files</h3>
+          <div
+            id="drop-zone"
+            class="border-2 border-dashed border-base-300 rounded-xl p-8 text-center cursor-pointer transition-colors hover:border-primary"
+            onclick="document.getElementById('file-input').click()"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mx-auto mb-2 text-base-content/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <p class="text-sm text-base-content/50">Drop images here or click to browse</p>
+            <input id="file-input" type="file" multiple accept="image/*" class="hidden">
+          </div>
+
+          <!-- File list -->
+          <div id="file-list" class="mt-3 space-y-1 max-h-40 overflow-y-auto hidden"></div>
+
+          <div class="flex gap-2 mt-3">
+            <button id="btn-clear-inbox" class="btn btn-sm btn-ghost btn-outline" disabled>Clear inbox</button>
+            <span id="inbox-count" class="text-xs text-base-content/50 self-center"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Script Selector -->
+      <div class="card bg-base-100 shadow-md">
+        <div class="card-body">
+          <h3 class="card-title text-base mb-3">2. Choose Script</h3>
+          <div class="space-y-2" id="script-options">
+            <label class="flex items-start gap-3 p-3 rounded-lg border border-base-200 cursor-pointer hover:bg-base-50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors">
+              <input type="radio" name="sort-script" value="vision" class="radio radio-primary radio-sm mt-0.5">
+              <div>
+                <div class="font-medium text-sm">Vision</div>
+                <div class="text-xs text-base-content/50">AI categorization via Ollama moondream — smart but slow</div>
+              </div>
+            </label>
+            <label class="flex items-start gap-3 p-3 rounded-lg border border-base-200 cursor-pointer hover:bg-base-50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors">
+              <input type="radio" name="sort-script" value="ocr" class="radio radio-primary radio-sm mt-0.5">
+              <div>
+                <div class="font-medium text-sm">OCR</div>
+                <div class="text-xs text-base-content/50">Tesseract text extraction + keyword matching — fast, offline</div>
+              </div>
+            </label>
+            <label class="flex items-start gap-3 p-3 rounded-lg border border-base-200 cursor-pointer hover:bg-base-50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors">
+              <input type="radio" name="sort-script" value="ocr-vision" class="radio radio-primary radio-sm mt-0.5">
+              <div>
+                <div class="font-medium text-sm">OCR + Vision</div>
+                <div class="text-xs text-base-content/50">OCR first, falls back to auto keyword learning — balanced</div>
+              </div>
+            </label>
+            <label class="flex items-start gap-3 p-3 rounded-lg border border-base-200 cursor-pointer hover:bg-base-50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors">
+              <input type="radio" name="sort-script" value="burst" class="radio radio-primary radio-sm mt-0.5">
+              <div>
+                <div class="font-medium text-sm">Burst / Session</div>
+                <div class="text-xs text-base-content/50">Groups images by capture time into sessions — no AI needed</div>
+              </div>
+            </label>
+          </div>
+
+          <div class="mt-4">
+            <button id="btn-run-sort" class="btn btn-primary w-full" disabled>Run Script</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output terminal -->
+    <div class="card bg-base-100 shadow-md">
+      <div class="card-body">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="card-title text-base">Output</h3>
+          <button id="btn-clear-output" class="btn btn-xs btn-ghost">Clear</button>
+        </div>
+        <div class="bg-neutral rounded-lg p-4 min-h-32 max-h-96 overflow-y-auto">
+          <pre id="sort-output" class="terminal-output text-neutral-content text-xs whitespace-pre-wrap">Waiting for a run…</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ DOCS TAB -->
+  <div id="tab-docs" class="tab-panel max-w-3xl mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-6" style="color: var(--color-on-surface);">Component Docs</h2>
+
+    <div style="display: flex; flex-direction: column; gap: var(--space-8);">
+
+      <div>
+        <sg-section-header>Buttons</sg-section-header>
+        <div style="display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-4) 0;">
+          <sg-button variant="primary" size="large">Primary Button</sg-button>
+          <sg-button variant="primary" size="small">Primary Small</sg-button>
+          <sg-button variant="secondary" size="large">Secondary Button</sg-button>
+          <sg-button variant="secondary" size="small">Secondary Small</sg-button>
+        </div>
+      </div>
+
+      <div>
+        <sg-section-header>Fields</sg-section-header>
+        <div style="display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-4) 0;">
+          <sg-field label="Email" type="email" placeholder="you@example.com"></sg-field>
+          <sg-field label="Password" type="password" placeholder="Enter password"></sg-field>
+          <sg-field label="Name" type="text" placeholder="Your name" state="error" message="This field is required"></sg-field>
+        </div>
+      </div>
+
+      <div>
+        <sg-section-header>Controls</sg-section-header>
+        <sg-row-group>
+          <sg-row title="Notifications" action="switch"></sg-row>
+          <sg-row title="Dark Mode" action="switch" checked></sg-row>
+          <sg-row title="Newsletter" action="checkbox"></sg-row>
+          <sg-row title="Alerts" action="checkbox" checked no-divider></sg-row>
+        </sg-row-group>
+      </div>
+
+      <div>
+        <sg-section-header>Segmented Control</sg-section-header>
+        <div style="padding: var(--space-4) 0;">
+          <sg-seg-control options='["Daily","Weekly","Monthly"]' selected="0"></sg-seg-control>
+        </div>
+      </div>
+
+      <div>
+        <sg-section-header>List</sg-section-header>
+        <sg-row-group>
+          <sg-row title="Account" subtext="Manage your account" action="chevron"></sg-row>
+          <sg-row title="Notifications" subtext="Push, email, SMS" action="chevron"></sg-row>
+          <sg-row title="Privacy" action="chevron"></sg-row>
+          <sg-row title="App Version" value="1.0.0" no-divider></sg-row>
+        </sg-row-group>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Component Scripts -->
+  <script type="module" src="components/button/button.js"></script>
+  <script type="module" src="components/field/field.js"></script>
+  <script type="module" src="components/controls/controls.js"></script>
+  <script type="module" src="components/row/row.js"></script>
+
+  <script>
+    // ── Tab switching ──────────────────────────────────────────────────────────
+    function switchTab(name) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('#main-tabs .tab').forEach(t => t.classList.remove('tab-active'));
+      document.getElementById('tab-' + name).classList.add('active');
+      document.querySelector(`[data-tab="${name}"]`).classList.add('tab-active');
+    }
+    document.querySelectorAll('#main-tabs .tab').forEach(tab => {
+      tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+    });
+
+    // ── AI Status polling ──────────────────────────────────────────────────────
+    const dot  = document.getElementById('ai-status-dot');
+    const txt  = document.getElementById('ai-status-text');
+    const msg  = document.getElementById('ai-launch-msg');
+
+    async function checkAiStatus() {
+      try {
+        const r = await fetch('/api/ai/status');
+        const { running } = await r.json();
+        dot.className = `inline-block w-3 h-3 rounded-full ${running ? 'bg-success' : 'bg-error'}`;
+        txt.textContent = running ? 'Ollama running' : 'Ollama stopped';
+        document.getElementById('btn-ai-start').disabled = running;
+        document.getElementById('btn-ai-stop').disabled = !running;
+      } catch {
+        dot.className = 'inline-block w-3 h-3 rounded-full bg-gray-300';
+        txt.textContent = 'Server not reachable';
+      }
+    }
+    checkAiStatus();
+    setInterval(checkAiStatus, 5000);
+
+    document.getElementById('btn-ai-start').addEventListener('click', async () => {
+      await fetch('/api/ai/start', { method: 'POST' });
+      msg.textContent = 'Starting Ollama…';
+      setTimeout(checkAiStatus, 1500);
+    });
+    document.getElementById('btn-ai-stop').addEventListener('click', async () => {
+      await fetch('/api/ai/stop', { method: 'POST' });
+      msg.textContent = 'Stopped.';
+      setTimeout(checkAiStatus, 800);
+    });
+
+    document.querySelectorAll('.ai-launch-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const tool = btn.dataset.tool;
+        msg.textContent = `Launching ${tool}…`;
+        const r = await fetch(`/api/ai/launch/${tool}`, { method: 'POST' });
+        const { ok, message } = await r.json();
+        msg.textContent = ok ? `${tool} launched in Terminal.` : `Error: ${message}`;
+      });
+    });
+
+    // ── Project folder selector ────────────────────────────────────────────────
+    const dirInput  = document.getElementById('project-dir-input');
+    const dirMsg    = document.getElementById('project-dir-msg');
+
+    // Load current folder on start
+    fetch('/api/project/dir').then(r => r.json()).then(({ dir }) => { dirInput.value = dir; });
+
+    async function setProjectDir(dir) {
+      const r = await fetch('/api/project/dir', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dir }),
+      });
+      const { ok, dir: saved, error } = await r.json();
+      if (ok) { dirInput.value = saved; dirMsg.textContent = '✓ Saved'; setTimeout(() => dirMsg.textContent = '', 2000); }
+      else     { dirMsg.textContent = `Error: ${error}`; }
+    }
+
+    document.getElementById('btn-set-folder').addEventListener('click', () => setProjectDir(dirInput.value.trim()));
+    dirInput.addEventListener('keydown', e => { if (e.key === 'Enter') setProjectDir(dirInput.value.trim()); });
+
+    // Drag a folder from Finder onto the input
+    dirInput.addEventListener('dragover', e => { e.preventDefault(); dirInput.classList.add('input-primary'); });
+    dirInput.addEventListener('dragleave', () => dirInput.classList.remove('input-primary'));
+    dirInput.addEventListener('drop', e => {
+      e.preventDefault();
+      dirInput.classList.remove('input-primary');
+      const item = e.dataTransfer.items?.[0];
+      if (item?.kind === 'file') {
+        const entry = item.webkitGetAsEntry?.();
+        if (entry?.isDirectory) {
+          // entry.fullPath is relative — use the File object's name as hint,
+          // but the server needs the real path. We get it from the file's path property (Electron-style)
+          // In a local server context, File.path is available via non-standard API on some browsers
+          const file = item.getAsFile();
+          const fullPath = file.path; // works in Chrome/Safari for local files
+          if (fullPath) { dirInput.value = fullPath; setProjectDir(fullPath); }
+          else { dirMsg.textContent = 'Drag not supported here — paste the path instead'; }
+        } else {
+          dirMsg.textContent = 'Drop a folder, not a file';
+        }
+      }
+    });
+
+    // ── Ollama log tail ────────────────────────────────────────────────────────
+    const logOutput   = document.getElementById('ai-log-output');
+    const logScroll   = document.getElementById('log-scroll');
+    const logLiveDot  = document.getElementById('log-live-dot');
+
+    let logInitialized = false;
+    function appendLog(text) {
+      if (!logInitialized && text.trim()) {
+        logOutput.textContent = '';
+        logInitialized = true;
+      }
+      logOutput.textContent += text;
+      logScroll.scrollTop = logScroll.scrollHeight;
+    }
+
+    function connectLogStream() {
+      const es = new EventSource('/api/ai/logs');
+      logLiveDot.className = 'inline-block w-2 h-2 rounded-full bg-success animate-pulse';
+
+      es.onmessage = (e) => appendLog(JSON.parse(e.data));
+      es.onerror = () => {
+        logLiveDot.className = 'inline-block w-2 h-2 rounded-full bg-error';
+        es.close();
+        // Retry after 3s
+        setTimeout(connectLogStream, 3000);
+      };
+    }
+    connectLogStream();
+
+    document.getElementById('btn-clear-log').addEventListener('click', () => {
+      logOutput.textContent = '';
+    });
+
+    // ── Sort: file drop & upload ────────────────────────────────────────────────
+    const dropZone   = document.getElementById('drop-zone');
+    const fileInput  = document.getElementById('file-input');
+    const fileList   = document.getElementById('file-list');
+    const inboxCount = document.getElementById('inbox-count');
+    const btnClear   = document.getElementById('btn-clear-inbox');
+    const btnRun     = document.getElementById('btn-run-sort');
+    let pendingFiles = [];
+
+    function updateRunBtn() {
+      const script = document.querySelector('input[name="sort-script"]:checked');
+      btnRun.disabled = pendingFiles.length === 0 || !script;
+    }
+    document.querySelectorAll('input[name="sort-script"]').forEach(r => r.addEventListener('change', updateRunBtn));
+
+    function renderFileList() {
+      if (pendingFiles.length === 0) {
+        fileList.classList.add('hidden');
+        inboxCount.textContent = '';
+        btnClear.disabled = true;
+      } else {
+        fileList.classList.remove('hidden');
+        fileList.innerHTML = pendingFiles.map(f =>
+          `<div class="flex justify-between text-xs text-base-content/70 bg-base-200 rounded px-2 py-1">
+            <span>${f.name}</span>
+            <span class="text-base-content/40">${(f.size/1024).toFixed(1)} KB</span>
+          </div>`
+        ).join('');
+        inboxCount.textContent = `${pendingFiles.length} file${pendingFiles.length > 1 ? 's' : ''} queued`;
+        btnClear.disabled = false;
+      }
+      updateRunBtn();
+    }
+
+    async function uploadFiles(files) {
+      const fd = new FormData();
+      files.forEach(f => fd.append('files', f));
+      await fetch('/api/sort/upload', { method: 'POST', body: fd });
+      pendingFiles = [...pendingFiles, ...files];
+      renderFileList();
+    }
+
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      uploadFiles([...e.dataTransfer.files]);
+    });
+    fileInput.addEventListener('change', () => {
+      uploadFiles([...fileInput.files]);
+      fileInput.value = '';
+    });
+
+    btnClear.addEventListener('click', async () => {
+      await fetch('/api/sort/inbox', { method: 'DELETE' });
+      pendingFiles = [];
+      renderFileList();
+    });
+
+    // ── Sort: run script ────────────────────────────────────────────────────────
+    const outputEl = document.getElementById('sort-output');
+
+    document.getElementById('btn-clear-output').addEventListener('click', () => {
+      outputEl.innerHTML = 'Waiting for a run…';
+    });
+
+    btnRun.addEventListener('click', () => {
+      const script = document.querySelector('input[name="sort-script"]:checked').value;
+      outputEl.innerHTML = '';
+      btnRun.disabled = true;
+
+      const es = new EventSource(`/api/sort/run/${script}`);
+      es.onmessage = (e) => {
+        const { type, data } = JSON.parse(e.data);
+        const span = document.createElement('span');
+        span.className = type;
+        span.textContent = data;
+        outputEl.appendChild(span);
+        outputEl.parentElement.scrollTop = outputEl.parentElement.scrollHeight;
+
+        if (type === 'done') {
+          es.close();
+          pendingFiles = [];
+          renderFileList();
+        }
+      };
+      es.onerror = () => {
+        es.close();
+        const span = document.createElement('span');
+        span.className = 'stderr';
+        span.textContent = '\n[Connection closed]';
+        outputEl.appendChild(span);
+        btnRun.disabled = false;
+        updateRunBtn();
+      };
+    });
+  </script>
+</body>
+</html>

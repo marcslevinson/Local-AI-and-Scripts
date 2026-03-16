@@ -1,0 +1,6 @@
+{
+  "appId": "com.example.mastertool",
+  "appName": "Master Tool",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
